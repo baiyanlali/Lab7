@@ -18,7 +18,7 @@ TODO: Please try to improve the convergence of the algorithm.
 
 import numpy as np
 import matplotlib.pyplot as plt
-
+import tqdm
 
 # Game settings
 R = 3
@@ -69,6 +69,7 @@ def calculate_fitness(population1, population2, memory_size, num_rounds):
     return fitness
 
 def mutation(parent, mutation_rate):
+    print(parent)
     return np.where(np.random.rand(*parent.shape) < mutation_rate, 1 - parent, parent)
 
 def run_co_evolutionary_algorithm(num_generations, pop_size, mutation_rate, memory_size, num_rounds):
@@ -78,7 +79,7 @@ def run_co_evolutionary_algorithm(num_generations, pop_size, mutation_rate, memo
     player1_scores = []
     player2_scores = []
 
-    for generation in range(num_generations):
+    for generation in tqdm.tqdm(range(num_generations)):
         player1_fitness = calculate_fitness(player1_population, player2_population, memory_size, num_rounds)
         player2_fitness = calculate_fitness(player2_population, player1_population, memory_size, num_rounds)
 
@@ -91,7 +92,6 @@ def run_co_evolutionary_algorithm(num_generations, pop_size, mutation_rate, memo
 
         parent_indices = np.random.choice(len(player2_population), size=(len(player2_population), 2), p=player2_fitness / player2_fitness.sum())
         player2_population = np.array([mutation((player2_population[p1] + player2_population[p2]) // 2, mutation_rate) for p1, p2 in parent_indices])
-
     plt.plot(player1_scores, label="Player 1")
     plt.plot(player2_scores, label="Player 2")
     plt.xlabel("Generation")
@@ -105,9 +105,12 @@ if __name__ == "__main__":
     # Parameters
     num_generations = 100
     pop_size = 50
+    # pop_size = 100
     mutation_rate = 0.1
-    memory_size = 3
+    # memory_size = 3
+    memory_size = 6
     num_rounds = 50
+    # num_rounds = 100
 
     # Run co-evolutionary algorithm
     print("Running co-evolutionary algorithm...")
